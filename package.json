@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Local stateful payment gateway sandbox for Stripe, MoMo, ZaloPay and VNPay with real signed webhooks, retries, chaos testing and a dashboard.",
   "license": "MIT",
-  "author": "PhamDucNhan",
+  "author": "Pham Duc Nhan",
   "homepage": "https://github.com/nhan7tuoi/pay-sandbox#readme",
   "repository": {
     "type": "git",

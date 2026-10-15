@@ -1,5 +1,8 @@
 # pay-sandbox
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/nhan7tuoi/pay-sandbox?style=social)](https://github.com/nhan7tuoi/pay-sandbox)
+
 **A local, stateful payment gateway sandbox for Stripe, MoMo, ZaloPay and VNPay.**
 Real signed webhooks, retries, chaos testing and a live dashboard. One command, no accounts, no tunnels, no internet.
 
@@ -246,4 +249,4 @@ Bug reports, gateway behaviour that doesn't match the real one, and pull request
 
 ## License
 
-MIT, as declared in `package.json`.
+[MIT](LICENSE) © 2026 Pham Duc Nhan
