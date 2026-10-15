@@ -1,0 +1,8 @@
+node_modules
+dist
+ui/dist
+*.log
+.DS_Store
+
+# Local visual test harness (merchant demo app), not part of the published package
+ui-test/

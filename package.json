@@ -1,0 +1,58 @@
+{
+  "name": "pay-sandbox",
+  "version": "0.1.0",
+  "description": "Stateful local mock gateway for Stripe with a real webhook dispatcher and a modern dashboard.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "pay-sandbox": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "ui/dist"
+  ],
+  "workspaces": [
+    "ui"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "stripe",
+    "mock",
+    "webhook",
+    "sandbox",
+    "testing",
+    "fastify"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,ui -c blue,magenta \"npm:dev:server\" \"npm:dev:ui\"",
+    "dev:server": "tsx watch src/cli.ts",
+    "dev:ui": "npm run dev --workspace ui",
+    "build": "npm run build:server && npm run build:ui",
+    "build:server": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
+    "build:ui": "npm run build --workspace ui",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck --workspace ui",
+    "test:client": "tsx test-client.ts",
+    "test:gateways": "tsx test-gateways.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@fastify/static": "^10.1.6",
+    "fastify": "^5.12.7",
+    "qs": "^6.16.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/qs": "^6.15.1",
+    "concurrently": "^10.0.6",
+    "stripe": "^23.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
