@@ -1,0 +1,50 @@
+Source: https://docs.zalopay.vn/docs/specs/callback-api/
+
+Callback​
+This API is implemented on the merchant site for receiving callbacks from Zalopay for payment.
+- application/json
+Request Body required
+data string
+Zalopay transaction data callback to the application
+Data is Json String has field:
+app_id (int): Order's app_id
+app_trans_id (string): Order's app_trans_id.
+app_time (long): Order's app_time.
+app_user (string): Order's app_user.
+amount (long): Order's amount user payment(VND).
+embed_data (json string): Order's embed_data.
+item (json array string): Order's item.
+zp_trans_id (long): Zalopay's transaction code.
+server_time (long): Zalopay's transaction trading time (unix timestamp in milliseconds). Example: 1460543836370
+channel (int): Payment channel.
+merchant_user_id (string): Zalopay user for each app_id.
+user_fee_amount (long): User fee amount(VND).
+discount_amount (long): User discount amount from Zalopay(VND).
+Data sample:
+{"data":"{\"app_id\":2553,\"app_trans_id\":\"200904_2553_1598435687208\",\"app_time\":1599189392817,\"app_user\":\"demo\",\"amount\":10000,\"embed_data\":\"{\\\"merchantinfo\\\":\\\"embeddata123\\\",\\\"promotioninfo\\\":\\\"\\\"}\",\"item\":\"[{\\\"itemid\\\":\\\"knb\\\",\\\"itemname\\\":\\\"kim nguyen bao\\\",\\\"itemprice\\\":198400,\\\"itemquantity\\\":1}]\",\"zp_trans_id\":200904000000389,\"server_time\":1599189413498,\"channel\":38,\"merchant_user_id\":\"7ZMSl3nEg5sOUJzOLSoUFT8xKNQVaLOLXHB--8Eytqc\",\"user_fee_amount\":0,\"discount_amount\":0}","mac":"d8d33baf449b31d7f9b94fa50d7c942c08cd4d83f28fa185557da21acb104f67","type":1}
+mac string
+Authentication information mac = HMAC(hmac_algorihtm, callback key, hmacinput), see as below:
+- hmac_algorihtm: is a security method registered by Merchant with Zalopay, the default is HmacSHA256.
+- callback key: provided by Zalopay at registration.
+- hmacinput = data
+type int
+Callback type
+1: Order
+Responses
+200
+OK
+- application/json
+- Schema
+- Example (from schema)
+Schema
+return_code int
+1: Success.
+2: Invalid.
+return_message string
+Success: in case retun_code=1.
+Invalid: in case return_code=2.
+{
+"return_code": 0,
+"return_message": "string"
+}
+Loading...

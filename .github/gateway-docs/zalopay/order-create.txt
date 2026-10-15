@@ -1,0 +1,158 @@
+Source: https://docs.zalopay.vn/docs/specs/order-create/
+
+Create Order​
+This API to is used to create order.
+- application/json
+- application/x-www-form-urlencoded
+Request Body required
+app_id int32 required
+This is a Zalopay-provided identifier specific to the merchant's service or application, established during the integration agreement for payment methods.
+app_user string(50) required
+Information of the user making the payment for the order: id/username ... of the user. If identification is not available, default information can be used, such as the application name, and must not be left blank.
+app_trans_id string(40) required
+Order's transaction code (TXID of order transaction). Must be preceded by yymmdd of the current date.
+The transaction-code's format should be yymmddOrder identifier. Ex: 250210_OrderID
+Merchant uses this field to query order's transaction status and reconciliation.yymmdd is correct TimeZone Vietnam (GMT+7) (Because of cross check transactions is in Vietnam time and date).
+app_time int64 required
+The time of order creation (unix timestamp in milliseconds), which is calculated in milliseconds, taken from the current time.
+expire_duration_seconds long
+Order expiration time. Time in seconds (minimum value: 300, maximum value: 2592000)
+amount int64 required
+The amount of the order (VND)
+description string(256) required
+The description of the order, used to display to users on the Zalopay app.
+callback_url string
+This is the URL of the merchant. After Zalopay successfully deducts the money, it will notify the merchant of the payment result for the order via the callback method (server-to-server).
+The callback_url can be dynamically passed for each order or configured as default on the Zalopay system.
+sub_app_id string(50)
+This is the service identifier/group of services used for payment within the merchant's application. For specific merchants, this information needs to be passed when creating orders.
+item string(2048) required
+JSON Array String additional data, defined by Merchant. Use "[]" when empty.
+embed_data string required
+JSON String include special information of order.
+Use "{}" if empty".
+Specific embed_data's fields:
+preferred_payment_method
++ DataType: array string
++ Format: ["domestic_card", "vietqr", "..."]. Refer to here
++ Description: Used to display optional payment methods on the Zalopay portal, example: {"preferred_payment_method":["vietqr"]}
+redirecturl
++ DataType: string
++ Format: URL
++ Description: Redirect to this url after successful / failure payment via Zalopay Gateway (This will override the merchant's redirect url registered with Zalopay). Example: {"redirecturl": "https://docs.Zalopay.vn/result"}
+columninfo
++ DataType: json string
++ Format: {"column_name": "value"}
++ Description: Add information into the section Management of transaction details on Merchant site, If the column does not yet exist, please go to the Display data configuration setting to configure. Example: {"columninfo": "{\"branch_id\": \"HCM\",\"store_id\": \"CH123\",\"store_name\": \"Saigon Centre\",\"mc_campaign_id\": \"FREESHIP\"}"}
+zlppaymentid
++ DataType: string
++ Description: Payment information. Only needed when you need to receive money for different accounts. Zalopay system will generate a Payment code (corresponding to each partner bank account provided) and send it back to the partner to set up. Example: {"zlppaymentid": "P4201372"}
+mac string required
+Authentication information mac = HMAC(hmac_algorihtm, mac key, hmacinput), see as below:
+- hmac_algorihtm: is a security method registered by Merchant with Zalopay, the default is HmacSHA256.
+- mac key: provided by Zalopay at registration.
+- hmac_input = app_id + | + app_trans_id + | + app_user + | + amount + | + app_time + | + embed_data + | + item.
+Please refer to secure data transmission for detailed information.
+bank_code string
+In the case of online payments by Zalopay Gateway, please refer to the bank_code specification details below:
+- "bank_code": "", "embed_data": "{"preferred_payment_method": []}": List of all supported forms and banks (ATM, CC, Zalopay QR, Zalopay QR multi-function, Apple Pay...).
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["domestic_card", "account"]}": Display ATM form for user entering ATM card or Bank account information.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["international_card"]}": Dislay form for user entering credit card information.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["zalopay_wallet"]}": Display Zalopay QR code to pay with Zalopay/Zalopay in Zalo.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["vietqr"]}": Display Zalopay QR multi-function to pay with Bank and Zalopay/Zalopay in Zalo application.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["bnpl"]}": Display Zalopay QR to pay with Zalopay/Zalopay on Zalo and the user's SOF will prioritize Buy now pay later (BNPL).
+Request Body required
+app_id int32 required
+This is a Zalopay-provided identifier specific to the merchant's service or application, established during the integration agreement for payment methods.
+app_user string(50) required
+Information of the user making the payment for the order: id/username ... of the user. If identification is not available, default information can be used, such as the application name, and must not be left blank.
+app_trans_id string(40) required
+Order's transaction code (TXID of order transaction). Must be preceded by yymmdd of the current date.
+The transaction-code's format should be yymmddOrder identifier. Ex: 250210_OrderID
+Merchant uses this field to query order's transaction status and reconciliation.yymmdd is correct TimeZone Vietnam (GMT+7) (Because of cross check transactions is in Vietnam time and date).
+app_time int64 required
+The time of order creation (unix timestamp in milliseconds), which is calculated in milliseconds, taken from the current time.
+expire_duration_seconds long
+Order expiration time. Time in seconds (minimum value: 300, maximum value: 2592000)
+amount int64 required
+The amount of the order (VND)
+description string(256) required
+The description of the order, used to display to users on the Zalopay app.
+callback_url string
+This is the URL of the merchant. After Zalopay successfully deducts the money, it will notify the merchant of the payment result for the order via the callback method (server-to-server).
+The callback_url can be dynamically passed for each order or configured as default on the Zalopay system.
+sub_app_id string(50)
+This is the service identifier/group of services used for payment within the merchant's application. For specific merchants, this information needs to be passed when creating orders.
+item string(2048) required
+JSON Array String additional data, defined by Merchant. Use "[]" when empty.
+embed_data string required
+JSON String include special information of order.
+Use "{}" if empty".
+Specific embed_data's fields:
+preferred_payment_method
++ DataType: array string
++ Format: ["domestic_card", "vietqr", "..."]. Refer to here
++ Description: Used to display optional payment methods on the Zalopay portal, example: {"preferred_payment_method":["vietqr"]}
+redirecturl
++ DataType: string
++ Format: URL
++ Description: Redirect to this url after successful / failure payment via Zalopay Gateway (This will override the merchant's redirect url registered with Zalopay). Example: {"redirecturl": "https://docs.Zalopay.vn/result"}
+columninfo
++ DataType: json string
++ Format: {"column_name": "value"}
++ Description: Add information into the section Management of transaction details on Merchant site, If the column does not yet exist, please go to the Display data configuration setting to configure. Example: {"columninfo": "{\"branch_id\": \"HCM\",\"store_id\": \"CH123\",\"store_name\": \"Saigon Centre\",\"mc_campaign_id\": \"FREESHIP\"}"}
+zlppaymentid
++ DataType: string
++ Description: Payment information. Only needed when you need to receive money for different accounts. Zalopay system will generate a Payment code (corresponding to each partner bank account provided) and send it back to the partner to set up. Example: {"zlppaymentid": "P4201372"}
+mac string required
+Authentication information mac = HMAC(hmac_algorihtm, mac key, hmacinput), see as below:
+- hmac_algorihtm: is a security method registered by Merchant with Zalopay, the default is HmacSHA256.
+- mac key: provided by Zalopay at registration.
+- hmac_input = app_id + | + app_trans_id + | + app_user + | + amount + | + app_time + | + embed_data + | + item.
+Please refer to secure data transmission for detailed information.
+bank_code string
+In the case of online payments by Zalopay Gateway, please refer to the bank_code specification details below:
+- "bank_code": "", "embed_data": "{"preferred_payment_method": []}": List of all supported forms and banks (ATM, CC, Zalopay QR, Zalopay QR multi-function, Apple Pay...).
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["domestic_card", "account"]}": Display ATM form for user entering ATM card or Bank account information.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["international_card"]}": Dislay form for user entering credit card information.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["zalopay_wallet"]}": Display Zalopay QR code to pay with Zalopay/Zalopay in Zalo.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["vietqr"]}": Display Zalopay QR multi-function to pay with Bank and Zalopay/Zalopay in Zalo application.
+- "bank_code": "", "embed_data": "{"preferred_payment_method": ["bnpl"]}": Display Zalopay QR to pay with Zalopay/Zalopay on Zalo and the user's SOF will prioritize Buy now pay later (BNPL).
+Responses
+200
+OK
+- application/json
+- Schema
+- Example (from schema)
+Schema
+return_code integer
+Status code.
+Please refer to status code for possible values.
+return_message string
+Description of status code.
+sub_return_code integer
+Staus code detail.
+Please refer to sub status code for possible values
+sub_return_message string
+Description of status code detail.
+zp_trans_token string
+Token of the transaction.
+In case of integration according to the AppToApp model, use this value to open the Zalopay application on the user's device for the user to make payment.
+In case of token payment, use this value to call the Pay by token API.
+order_url string
+Used to forward users to Zalopay Gateway page.
+order_token string
+Token of the order.
+qr_code string
+Used to create Zalopay QR multi-function on Merchant system. Zalopay QR multi-function is one of our brand new payment solution, which accepts payments made by both Zalopay & +40 banks belonged to NAPAS system. User can using bank app scan Zalopay QR multi-function for payment.
+{
+"return_code": 0,
+"return_message": "string",
+"sub_return_code": 0,
+"sub_return_message": "string",
+"zp_trans_token": "string",
+"order_url": "string",
+"order_token": "string",
+"qr_code": "string"
+}
+Loading...

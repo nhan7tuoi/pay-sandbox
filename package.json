@@ -53,6 +53,7 @@
     "build:ui": "npm run build --workspace ui",
     "start": "node dist/cli.js",
     "typecheck": "tsc -p tsconfig.json --noEmit && npm run typecheck --workspace ui",
+    "test": "node scripts/run-e2e.mjs",
     "test:client": "tsx test-client.ts",
     "test:gateways": "tsx test-gateways.ts",
     "prepublishOnly": "npm run build"

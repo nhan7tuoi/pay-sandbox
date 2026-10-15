@@ -1,0 +1,49 @@
+Source: https://developers.momo.vn/v3/docs/payment/api/result-handling/resultcode
+
+After submitting an API request, you'll receive a response inform that your request was received and processed. Depending on the HTTP status code of the response, please handle the corresponding logical actions.
+- 2xx: indicates a well received and processed request
+- 4xx: you did something wrong in the request
+- 5xx: something's wrong with the server, or connection
+Other than HTTP status code, you'll also receive MoMo error codes and messages (in EN and VI) in the response. Each of them will carry out a distinguish result of your request, so please apply the logical handlers for them all.
+To minimize unwanted side effects when requests are duplicated, you can also take the following actions on your end:
+- Implement asynchronous server-to-server notification receiver, using MoMo's IPN (instant push notification) service, via ipnUrl attribute in the request.
+- Enable idempotency in your API requests. The MoMo API supports idempotency on POST requests (other request types such as GET, DELETE and PUT are idempotent by definition).
+The open API of MoMo's payment gateway version 2.1 (and up) supports idempotency, allowing you to retry a request multiple times while only performing the action once. This helps avoid unwanted duplication in case of failures and retries. All the error codes implicates "Final Status" in the list below are idempotent, whereas the other ones will returned "duplicated requestId" error messages if a request (identified as requestId) is sent multiple times.
+| Result code | Description | Final Status | Recommended actions | Type
+| 0 | Successful. | Yes | |
+| 10 | System is under maintenance. | No | Please retry after the maintenance is over. | System error
+| 11 | Access denied. | No | Merchant settings issue. Please check your settings in M4B portal, or contact MoMo for configurations. | System error
+| 12 | Unsupported API version for this request. | No | Please upgrade to our latest version of payment gateway as the current version is no longer in support. | System error
+| 13 | Merchant authentication failed. | No | Please check your credentials and the ones provided in M4B portal. | Merchant error
+| 20 | Bad format request. | No | Please check the request format or any missing parameters. | Merchant error
+| 21 | Request rejected due to invalid transaction amount. | No | Please check if the amount is irrelevant and retry a request. | Merchant error
+| 22 | The transaction amount is out of range. | No | Please check if the amount is within the allowed range of each payment method. For capture requestType, check if the capture amount match the authorized amount. | Merchant error
+| 40 | Duplicated requestId. | No | Please retry with a different requestID. | Merchant error
+| 41 | Duplicated orderId. | No | Please inquiry the orderId's transaction status, or retry with a different orderId. | Merchant error
+| 42 | Invalid orderId or orderId is not found. | No | Please retry with a different orderId. | Merchant error
+| 43 | Request rejected due to an analogous transaction is being processed. | No | Before retry, please check if another analogous transaction is being processed which restricts this request. | Merchant error
+| 45 | Duplicated ItemId | No | Please check and retry the request with unique ItemId. | Merchant error
+| 47 | Request rejected due to inapplicable information in the given set of valuable data. | No | Please review and retry with another request. | System error
+| 98 | This QR Code has not been generated successfully. Please try again later. | Yes | Please retry with another request. | System error
+| 99 | Unknown error. | Yes | Please contact MoMo for more details. | System error
+| 1000 | Transaction is initiated, waiting for user confirmation. | No | The transaction is still waiting for the user confirmation, the transaction state will change after user confirms or cancels the payment. |
+| 1001 | Transaction failed due to insufficient funds. | Yes | | Merchant error
+| 1002 | Transaction rejected by the issuers of the payment methods. | Yes | Please choose other payment methods. | User error
+| 1003 | Transaction cancelled after successfully authorized. | Yes | The transaction was canceled by merchant or MoMo system due to timeout handlers. Please mark the transaction as failed. | Merchant error
+| 1004 | Transaction failed because the amount exceeds daily /monthly payment limit. | Yes | Please mark the transaction as failed, and retry another day. | User error
+| 1005 | Transaction failed because the url or QR code expired. | Yes | Please send another payment request. | System error
+| 1006 | Transaction failed because user has denied to confirm the payment. | Yes | Please send another payment request. | User error
+| 1007 | Transaction rejected due to inactive or nonexistent user's account. | Yes | Please ensure the account status should be active/verified before retrying or contact MoMo for support. | System error
+| 1017 | Transaction cancelled by merchant. | Yes | | Merchant error
+| 1026 | Transaction restricted due to promotion rules. | Yes | Please contact MoMo for the restriction details. | System error
+| 1080 | Refund attempt failed during the processing. Please retry within a short period, preferably after an hour. | Yes | Please check if the original orderId or transId used in the request is correct, then retry to refund later (recommended to be in 1 hour for payment transaction that was processed longer than 1 month ago). | Merchant error
+| 1081 | Refund rejected. The original transaction might have been refunded. | Yes | Please check if the original transaction has already been refunded, or the amount of your refund request exceeds the refundable amount. | Merchant error
+| 1088 | Refund rejected. The original payment transaction is ineligible to be refunded | Yes | Please contact MoMo for the restriction details. | Merchant error
+| 2019 | Request rejected due to invalid orderGroupId. | Yes | Please contact MoMo for the restriction details. | Merchant error
+| 4001 | Transaction rejected because the user account is being restricted. | Yes | Please contact MoMo for the restriction details of this certain user account. | User error
+| 4002 | Transaction rejected because the user account has not been verified by C06. | Yes | Users must update their biometrics via NFC to be authorized for the transaction. | User error
+| 4100 | Transaction failed because user has failed to login. | Yes | | User error
+| 7000 | Transaction is being processed. | No | Please wait for the transaction to be fully processed. | Pending
+| 7002 | Transaction is being processed by the provider of the payment instrument selected. | No | Please wait for the transaction to be processed. The transaction status will be notified once it's done processing. | Pending
+| 9000 | Transaction is authorized successfully. | No | For 1-step payment, please mark this transaction as success.
+For 2-step payment, please proceed with either capture or cancel request. For binding, please proceed to request the recurring token. | Pending

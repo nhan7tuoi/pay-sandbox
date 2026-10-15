@@ -1,0 +1,80 @@
+Source: https://docs.zalopay.vn/docs/specs/order-query/
+
+Query Order Status​
+This API to is used to query order status
+Implementation Recommendation
+In some cases, the Merchant may not receive a callback from Zalopay, for example:
+- Network errors (Network Timeout);
+- The Merchant's service is temporarily unavailable (Service Unavailable);
+- Internal errors on the Merchant's or Zalopay's system;
+- Or unexpected issues during data transmission.
+To ensure that the transaction status is always synchronized, Zalopay recommends that the Merchant implement one of the following approaches:
+Option 1 (Recommended)
+Set up a scheduler/background job to periodically query the status of orders for which the Merchant has not received a callback, until:
+- The Merchant receives the callback; or
+- The payment period for the order has expired.
+Option 2
+If the Merchant does not implement a scheduler/background job, it should call the Get order's status API at least once after the default payment period (15 minutes) has expired and the callback has not been received.
+- application/json
+- application/x-www-form-urlencoded
+Request Body required
+app_id integer required
+This is a Zalopay-provided identifier specific to the merchant's service or application, established during the integration agreement for payment methods.
+app_trans_id string required
+The transaction ID that is used for querying (TXID of order transaction).
+mac string required
+Authentication information mac = HMAC(hmac_algorihtm, mac key, hmacinput), see as below:
+- hmac_algorihtm: is a security method registered by Merchant with Zalopay, the default is HmacSHA256.
+- mac key: provided by Zalopay at registration.
+- hmacinput = app_id + | + app_trans_id + | + mac key
+Please refer to secure data transmission for detailed information.
+Request Body required
+app_id integer required
+This is a Zalopay-provided identifier specific to the merchant's service or application, established during the integration agreement for payment methods.
+app_trans_id string required
+The transaction ID that is used for querying (TXID of order transaction).
+mac string required
+Authentication information mac = HMAC(hmac_algorihtm, mac key, hmacinput), see as below:
+- hmac_algorihtm: is a security method registered by Merchant with Zalopay, the default is HmacSHA256.
+- mac key: provided by Zalopay at registration.
+- hmacinput = app_id + | + app_trans_id + | + mac key
+Please refer to secure data transmission for detailed information.
+Responses
+200
+OK
+- application/json
+- Schema
+- Example (from schema)
+Schema
+return_code integer
+Status code.
+Please refer to status code for possible values
+return_message string
+Description of status code.
+sub_return_code integer
+Status code detail.
+Please refer to sub status code for possible values
+sub_return_message string
+Description of status code detail.
+is_processing boolean
+Order processing status information (for Zalopay only).
+amount int64
+Amount received (only available when the payment is successful).
+zp_trans_id int64
+Zalopay's transaction code, initiate when users confirms payment at Zalopay site. Merchant uses this to request refund & reconciliation.
+server_time int64
+Zalopay's Transaction processing time (unix timestamp in milliseconds).
+discount_amount int64
+Discount amount user received.
+{
+"return_code": 0,
+"return_message": "string",
+"sub_return_code": 0,
+"sub_return_message": "string",
+"is_processing": true,
+"amount": 0,
+"zp_trans_id": 0,
+"server_time": 0,
+"discount_amount": 0
+}
+Loading...

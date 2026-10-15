@@ -1,0 +1,231 @@
+Source: https://developers.momo.vn/v3/docs/payment/api/wallet/onetime
+
+One-Time (Non-Recurring) Checkout Payments with MoMo E-Wallet are supported on various platforms:
+- Desktop websites
+- Mobile websites
+- Mobile apps
+- Devices that do not support internet browser
+One-Time (Non-Recurring) Checkout Payments with Mobile Banking App are supported on various platforms:
+- Desktop websites
+- Devices that do not support internet browser
+The instructions below show how you can process accordingly for each platform type and how API Configurations operate.
+Process Flow​
+API Configuration​
+HTTP Information
+Initiate payment method​
+On the merchant's payment page, after customers choose to pay with MoMo e-wallet, merchant server needs to call MoMo's API captureWallet to get payment methods and then apply suitable ones to their platforms.
+requestType: Identify the type of the request
+Minimum timeout when call this API must be 30s to ensure receive response from MoMo.
+HTTP Request
+POST /v2/gateway/api/create
+| Attribute | Type | Required | Description
+| partnerCode | String(50) | | Integration information
+| subPartnerCode | String(50) | | Sub partner Id
+Apply to Master Merchant, 3PSP: third party services provider groups only
+| storeName | String | | Partner store name
+| storeId | String(50) | | Store ID
+| requestId | String(50) | | Request ID, unique for each request,
+MoMo's partner uses the requestId field for idempotency control
+| amount | Long | | Amount needs to be paid
+Min: 1.000 VND
+Max: 50.000.000 VND
+Currency: VND
+Data type: Long
+| orderId | String(200) | | Partner Transaction ID
+Regex: ^[0-9a-zA-Z]([-_.]*[0-9a-zA-Z]+)*$
+| orderInfo | String(255) | | Order's information
+| orderGroupId | Long | | The orderGroupId will be provided by MoMo to classify groups of orders for further operational activities. Please contact MoMo to use this field.
+| redirectUrl | String | | Default value is empty ""
+A partner's URL. This URL is used to redirect from MoMo page to partner's page after customer's payment.
+Support: AppLink and WebLink
+| ipnUrl | String | | Partner API. Used by MoMo to submit payment results by IPN method (server-to-server) method
+| requestType | String | | captureWallet
+| extraData | String(1000) | | Default value is empty ""
+Encode base64 follow Jsonformat: {"key":"value"}
+Example with data: {"username":"momo","skus":"value1,value2"}
+=> data of extraData: eyJ1c2VybmFtZSI6Im1vbW8iLCJza3VzIjoidmFsdWUxLHZhbHVlMiJ9
+| items | List | | List of products displayed on the payment page. Maximum: 50 items
+| deliveryInfo | Object | | Delivery info of this order
+| userInfo | Object | | Info of the customer
+| referenceId | String(200) | | Partner sub-reference code
+For example, used in cases like customer code, household code, invoice code, subscriber code, etc.
+| autoCapture | Boolean | | If set to false, the payment will not be automatically captured.
+| lang | String | | Language of returned message (vi or en)
+| signature | String | | Signature to confirm information. Secure transaction in Hmac_SHA256 with format: a String sort all key name of data field from a-z:
+accessKey=$accessKey&amount=$amount&extraData=$extraData
+&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo
+&partnerCode=$partnerCode&redirectUrl=$redirectUrl
+&requestId=$requestId&requestType=$requestType
+Details of an item​
+It is not required to add items. Howvever, each item added must have these fixed keys:
+| Attribute | Type | Required | Description
+| id | String | | SKU number
+| name | String | | Name of the product
+| description | String | | Description of the product
+| category | String | | Product classification/Product category
+| imageUrl | String | | Link image of product
+| manufacturer | String | | Name of manufacturer
+| price | Long | | Unit price
+| currency | String | | VND
+| quantity | Integer | | Quantity number of the product. It must be greater than 0
+| unit | String | | The units of measurement used for products
+| totalPrice | Long | | Total price = price x quantity
+| taxAmount | Long | | Total amount of tax
+Example Items
+{
+"id": "204727",
+"name": "YOMOST Bac Ha&Viet Quat 170ml",
+"description": "YOMOST Sua Chua Uong Bac Ha&Viet Quat 170ml/1 Hop",
+"category": "beverage",
+"imageUrl":"https://momo.vn/uploads/product1.jpg",
+"manufacturer":"Vinamilk",
+"price": 11000,
+"quantity": 5,
+"unit":"hộp",
+"totalPrice": 55000,
+"taxAmount":"200"
+}
+Details of deliveryInfo​
+| Attribute | Type | Required | Description
+| deliveryAddress | String | | Delivery address
+| deliveryFee | String | | Delivery fee
+| quantity | String | | Quantity of product
+Example deliveryInfo
+{
+"deliveryAddress": "Phu My Hung Tower",
+"deliveryFee": "30000",
+"quantity": "2"
+}
+Details of userInfo content​
+If this is provided, customer as MoMo user will be receive a notification or email (by choices).
+| Attribute | Type | Required | Description
+| name | String | | Name of the customer as registered on merchant site
+| phoneNumber | String | | Phone number of the customer as registered on merchant site
+| email | String | | Email address of the customer as registered on merchant site
+Example UserInfo
+{
+"name": "Nguyen Van A",
+"phoneNumber": "0999888999",
+"email": "email_add@domain.com"
+}
+Redirecting information (redirectUrl)
+WebLink: Links to open website.
+AppLink: Link to open mobile application.
+Learn more about AppLink
+- Android: https://developer.android.com/training/app-links
+- IOS: https://developer.apple.com/documentation/uikit/core_app/..
+Example Request
+{
+"partnerCode": "MOMOT5BZ20231213_TEST",
+"requestType": "captureWallet",
+"ipnUrl": "https://example.com/momo_ip",
+"redirectUrl": "https://momo.vn/",
+"orderId": "Partner_Transaction_ID_1721725424433",
+"amount": "1000",
+"orderInfo": "Thank you for your purchase at MoMo_test",
+"requestId": "Request_ID_1721725424433",
+"extraData": "eyJza3VzIjoiIn0=",
+"signature": "5d9eae90a89b45731c7667e9056c95739eb5162a272dfc288aac6090e762b0b9",
+"lang": "en"
+}
+HTTP Response
+| Attribute | Type | Required | Description
+| partnerCode | String | | Integration information
+| requestId | String | | Same as the original request
+| orderId | String | | Partner Transaction ID
+| amount | Long | | Same as the original payment amount
+| responseTime | Long | | Time to respond payment results to partner
+Format: timestamp
+| message | String | | Error description, error language is based on lang
+| resultCode | int | | Result Code
+| payUrl | String | | URL for switching from the partner's page to the MoMo payment page
+| deeplink | String | | URL to open MoMo application directly (Customers must install MoMo app first) and payment confirmation screen.
+If you have problem opening deeplink in android 11, please see the tutorial
+| qrCodeUrl | String | | Data to generate QR code if you want customers to scan the QR code directly on your purchase page or to print it on the invoice.
+Note: This URL is NOT containing the image of the QR code, you need to use an external library to generate the QR code.
+| deeplinkMiniApp | String | | URL to open the MoMo app's payment confirmation screen. Apply when partner's website is embedded into MoMo app.
+| signature | String | | Signature to confirm information. Secure transaction in Hmac_SHA256 with format:
+accessKey=$accessKey&amount=$amount&message=$message&orderId=$orderId
+&partnerCode=$partnerCode&payUrl=&payUrl&requestId=
+$requestId&responseTime=$responseTime&resultCode=$resultCode
+| userFee | Long | | User Fee
+On the production environment: You need to request permission to use qrCodeUrl, deeplink,deeplinkMiniApp fields.
+Example Response
+{
+"partnerCode": "MOMOT5BZ20231213_TEST",
+"orderId": "Partner_Transaction_ID_1721720620078",
+"requestId": "Request_ID_1721720620078",
+"amount": 1000,
+"responseTime": 1721720619912,
+"message": "Successful.",
+"resultCode": 0,
+"payUrl": "https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT1Q1QloyMDIzMTIxM19URVNUfFBhcnRuZXJfVHJhbnNhY3Rpb25fSURfMTcyMTcyMDYyMDA3OA&s=6c14385cd4355e0abe0e0563a2da20705bceca9fac79746b2bf6a4c380374b44",
+"deeplink": "momo://app?action=payWithApp&isScanQR=false&serviceType=app&sid=TU9NT1Q1QloyMDIzMTIxM19URVNUfFBhcnRuZXJfVHJhbnNhY3Rpb25fSURfMTcyMTcyMDYyMDA3OA&v=3.0",
+"qrCodeUrl": "00020101021226110007vn.momo38260010A0000007270208QRIBFTTA5303704540410005802VN62480515MMTCfKWQmuH5nQR0825Thank you for your purcha6304B293"
+}
+Payment​
+You need to install MoMo Test app and use MoMo TEST Account to process payment.
+Payment guideline: Login > Home screen > Scan QR.
+Processing payment result​
+>>>For more information, see Payment Notification.
+Parameter description​
+Description for parameters which are used by MoMo in the URL redirectUrl and the body content of ipnUrl.
+| Attribute | Type | Required | Description
+| partnerCode | String | | Integration Information
+| orderId | String | | Partner Transaction ID
+| requestId | String | | Partner's requestId
+| amount | Long | | Payment amount
+| partnerUserId | String | | MoMo's unique identifier for each MoMo eWallet account.
+| storeId | String | | Store ID
+Apply for static QR
+| orderInfo | String | | Order's information
+| orderType | String | | momo_wallet
+| transId | Long | | MoMo's transaction ID
+| resultCode | Integer | | Transaction status of the order Result Code
+| message | String | | Error description, languague is based on lang
+| payType | String | | Payment type: webApp, app,qror miniapp.
+In case you are using AIO QR, payment type will be aio_qror banktransfer_qr.
+| responseTime | Long | | Time to respond payment results to partner
+Format: timestamp
+| extraData | String | | Extra Data. Default: ""
+| signature | String | | Signature to confirm information. Secure transaction in Hmac_SHA256 algorithm with format: a String sort all key name of data field from a-z:
+accessKey=$accessKey&amount=$amount&extraData=$extraData
+&message=$message&orderId=$orderId&orderInfo=$orderInfo
+&orderType=$orderType&partnerCode=$partnerCode&payType=
+$payType&requestId=$requestId&responseTime=
+$responseTime&resultCode=$resultCode&transId=$transId
+| paymentOption | String | | Account/Card has been used to pay for the transaction: momo,pay_later
+| userFee | Long | | User Fee
+| promotionInfo | List | | The data to identify the promotion campaign in which the voucher(s) was applied in the payment transaction, with fixed keys for each voucher
+Default value is null
+Details of promotionInfo​
+| Attribute | Type | Required | Description
+| amount | Long | | Discount amount of payment
+| amountSponsor | Long | | Discount amount sponsor of merchant
+| voucherId | String | | ID of the voucher/ campaign
+| voucherType | String | | Percent
+| voucherName | String | | Name of the voucher/ campaign
+| merchantRate | String | | Merchant rate of the voucher/ campaign
+IPN Request Example
+{
+"orderType": "momo_wallet",
+"amount": 1000,
+"partnerCode": "MOMOT5BZ20231213_TEST",
+"orderId": "Partner_Transaction_ID_1721720620078",
+"extraData": "eyJza3VzIjoiIn0=",
+"signature": "7b9f4ca728076c32f16041cbc917ebf5e6e7359f0bde343dde3add69a518cf0d",
+"transId": 4088878653,
+"responseTime": 1721720663942,
+"resultCode": 0,
+"message": "Successful.",
+"payType": "qr",
+"requestId": "Request_ID_1721720620078",
+"orderInfo": "Thank you for your purchase at MoMo_test"
+}
+Online tools, try yourself
+Result Codes & Messages​
+Kindly locate result codes and messages of One-time Payments in the comprehensive list of result codes provided here.
+See also​
+- Check Transaction Status
+- Refund
+- Confirm Payment

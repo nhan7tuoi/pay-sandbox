@@ -1,0 +1,73 @@
+Source: https://developers.momo.vn/v3/docs/payment/api/result-handling/notification/
+
+Processing payment result​
+Whenever a payment process is completed, we notify you of the event and whether it was successful or not.
+Interface (Redirect)​
+After a payment flow is completed, the customer will be redirected to the redirectUrl you provided in the create request. Some parameters will be added to the URL with the following format:
+Method: GET
+redirectUrl ?{parameters}
+IPN - Instant Payment Notification​
+MoMo Server will use the API declared in the ipnUrl field to send an HTTP Request with the configuration below to the partner server.
+>>> What is IPN and how to use it?
+Method: POST
+| Attribute | Value | Description
+| URL | ipnUrl | URL
+| Method | POST | Method of the HTTP Request
+| Headers | Content-type: **application/json ** | HTTP Headers
+| Payload | Result Transaction | The body content of HTTP
+IPN Request Example
+curl --location 'https://example.com/momo_ip' \
+--header 'Content-Type: application/json' \
+--data '{
+"orderType": "momo_wallet",
+"amount": 1000,
+"partnerCode": "MOMOT5BZ20231213_TEST",
+"orderId": "Partner_Transaction_ID_1721720620078",
+"extraData": "eyJza3VzIjoiIn0=",
+"signature": "7b9f4ca728076c32f16041cbc917ebf5e6e7359f0bde343dde3add69a518cf0d",
+"transId": 4088878653,
+"responseTime": 1721720663942,
+"resultCode": 0,
+"message": "Successful.",
+"payType": "qr",
+"requestId": "Request_ID_1721720620078",
+"orderInfo": "Thank you for your purchase at MoMo_test"
+}'
+Partner's response to MoMo after MoMo sends HTTP to the address ipnUrl
+You need to respond with HTTP code 204 (No Content)!
+Please note that you need to respond within a 15 seconds time limit
+You must validate the IPN signature to verify transaction result. Also it is highly recommended to match the values for notification PartnerCode, OrderId & Amount,... with the ones from your database!
+For the resultCode and message fields, partner will handle. Refer to the error code of MoMo to return.
+MoMo will use these information to give feedback to customers if any error occurs in the payment process from partner side.
+Transaction Status
+Use the resultCode field to determine the transaction status:
+- If resultCode = 0 Transaction succeeded
+- If resultCode = 9000 Transaction is authorized successfully.
+- If resultCode <> 0 Transaction failed
+Refer to Result code to identify transaction error details.
+For some reasons in cash flow and balance cross-checking, we will not use the returned IPN results from partner to refund the transaction! 💯
+Instant Payment Notification​
+Instant Payment Notification (IPN) is a message sent from the Payment Service Provider (PSP) to the Payment Service Consumer. It uses HTTP protocol and this process is asynchronously.
+Why use IPN​
+Instant Payment Notification (IPN) is used to notify transaction results immediately to Payment Service Consumer:
+- QR payment: Web, SmartTv.
+- Online payment
+- Recurring Payment
+Merchant can use its system to handle information received from the PSP:
+- Update transaction status (recommended)
+- Update account balance (topup), export products, notify transaction result to mobile app, etc.
+- Send receipt email
+Use IPN to fix the case when the payment is successful but users cannot receive what they paid for.
+Reasons:
+- User closes browser
+- Unable to redirect to the original purchase page: due to the internet connection, or the overloaded system , etc.
+How to execute IPN​
+Merchant needs to create an API at backend side to 'listen' for the result from MoMo and provide the URL of that API in the ipnUrl field
+After user makes a payment on MoMo (web or app), MoMo will notify the result of the transaction immediately to this URL.
+The merchant's API will receive the payment result and continue the process in merchant system.
+Build API​
+HTTP Produces Header:
+MoMo uses to send HTTP Request
+Content-Type: application/json
+HTTP Consumers Header: Merchant responds to MoMo: with HTTP code 204 (No need content)
+Endpoint: URL should only contain path, parameters must not contain special characters, unicode characters or spaces.

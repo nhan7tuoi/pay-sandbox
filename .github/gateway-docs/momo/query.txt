@@ -1,0 +1,47 @@
+Source: https://developers.momo.vn/v3/docs/payment/api/payment-api/query/
+
+This API gets the transaction status corresponding to requested OrderId for specific merchant.
+Minimum timeout when call this API must be 30s to ensure receive response from MoMo.
+HTTP Request
+POST /v2/gateway/api/query
+| Attribute | Type | Required | Description
+| partnerCode | String | | Integration information
+| requestId | String | | Unique ID of each request
+| orderId | String | | ID of order that needs to be checked.
+| lang | String | | Language of returned message (vi or en)
+| signature | String | | Signature to check information. Use Hmac_SHA256 algorithm with data in format: accessKey=$accessKey&orderId=$orderId&partnerCode=$partnerCode
+&requestId=$requestId
+Example request
+{
+"partnerCode": "123456",
+"requestId": "1527246504579",
+"orderId": "1527246478428",
+"signature": "13be80957a5ee32107198920fa26aa85a4ca238a29f46e292e8c33dd9186142a",
+"lang": "en"
+}
+HTTP Response
+| Attribute | Type | Required | Description
+| partnerCode | String | | Integration information
+| requestId | String | | Unique ID of each request
+| orderId | String | | Partner Transaction ID
+Regex: ^[0-9a-zA-Z]([-_.]*[0-9a-zA-Z]+)*$
+| extraData | String | | Extra Data. Default: value transmitted by merchant in captureWallet API
+| amount | Long | | Payment amount
+| transId | Long | | MoMo's transaction ID
+| payType | String | | Payment method. web or qr. Default: "" if it is not a payment
+| resultCode | int | | Result Code
+| refundTrans | List | | List of refund transactions
+| message | String | | Error description based on lang
+| responseTime | Long | | Time to respond payment results to partner
+Format: timestamp
+| paymentOption | String | | Account/Card has been used to pay for the transaction: momo,pay_later
+| promotionInfo | List | | The data to identify the promotion campaign in which the voucher(s) was applied in the payment transaction, with fixed keys for each voucher
+Default value is null
+Details of promotionInfo​
+| Attribute | Type | Required | Description
+| amount | Long | | Discount amount of payment
+| amountSponsor | Long | | Discount amount sponsor of merchant
+| voucherId | String | | ID of the voucher/ campaign
+| voucherType | String | | Percent
+| voucherName | String | | Name of the voucher/ campaign
+| merchantRate | String | | Merchant rate of the voucher/ campaign

@@ -211,7 +211,7 @@ Always run a final round of tests against each gateway's own test environment be
 
 ## Run from source
 
-Requires Node.js 20 or newer.
+Running pay-sandbox requires Node.js 20 or newer. Building it from source requires Node.js 20.19+ or 22.12+ (Vite 8).
 
 ```bash
 git clone https://github.com/nhan7tuoi/pay-sandbox.git
@@ -226,11 +226,18 @@ npm start                 # same as `npx pay-sandbox`
 ```bash
 npm run dev               # API with hot reload on :4242 + dashboard (Vite) on :5173/dashboard/
 npm run typecheck         # server + dashboard
-npm run test:client       # Stripe end-to-end checks with the official stripe SDK
-npm run test:gateways     # MoMo / ZaloPay / VNPay end-to-end checks
+npm test                  # starts the built sandbox and runs every end-to-end suite (run `npm run build` first)
+npm run test:client       # Stripe suite only, against an already running sandbox
+npm run test:gateways     # MoMo / ZaloPay / VNPay suite only, against an already running sandbox
 ```
 
-Both test scripts start a webhook receiver on port 3000, so start the sandbox first (`npm run dev:server`).
+The suites start a webhook receiver on port 3000. `npm test` manages the sandbox itself; for the single-suite scripts, start it first with `npm run dev:server`.
+
+### Continuous integration
+
+- **CI** (`.github/workflows/ci.yml`) runs build, typecheck and `npm test` on Node 20, 22 and 24 for every pull request and push to `main`.
+- **Dependabot** opens weekly update PRs for npm packages and GitHub Actions.
+- **Gateway docs watch** (`.github/workflows/gateway-docs-watch.yml`) downloads the MoMo, ZaloPay and VNPay documentation pages the adapters are based on every Monday. When one changes, it opens a pull request whose diff is the change in the documentation text (snapshots live in `.github/gateway-docs/`). Run it locally with `node scripts/watch-gateway-docs.mjs`.
 
 ```text
 src/
@@ -241,6 +248,7 @@ src/
   services/                 Stripe domain logic (PaymentIntents, refunds, Checkout, …)
 ui/                         React + Vite + Tailwind dashboard
 docs/                       per-gateway guides
+scripts/                    e2e runner and gateway docs watcher
 ```
 
 ## Contributing

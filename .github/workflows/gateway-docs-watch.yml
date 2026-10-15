@@ -1,0 +1,46 @@
+name: Gateway docs watch
+
+# Checks the official MoMo, ZaloPay and VNPay documentation every Monday and
+# opens (or updates) a pull request when any watched page changes, so adapter
+# changes can be reviewed against the exact documentation diff.
+
+on:
+  schedule:
+    - cron: "0 2 * * 1" # Mondays 02:00 UTC (09:00 in Vietnam)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: gateway-docs-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch documentation and update snapshots
+        id: watch
+        run: node scripts/watch-gateway-docs.mjs
+
+      - name: Open or update pull request
+        if: steps.watch.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/gateway-docs
+          delete-branch: true
+          add-paths: .github/gateway-docs/**
+          commit-message: "docs(gateway-watch): update snapshots for ${{ steps.watch.outputs.providers }}"
+          title: "Gateway docs changed: ${{ steps.watch.outputs.providers }}"
+          body-path: ${{ steps.watch.outputs.body-path }}
+          labels: gateway-docs

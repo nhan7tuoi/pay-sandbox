@@ -1,0 +1,154 @@
+Source: https://docs.zalopay.vn/docs/developer-tools/knowledge-base/status-codes/
+
+Status Codes
+Overview​
+The response from our APIs typically includes the following fields:
+| Field | Data type | Description
+| return_code | int | Status in general.
+| return_message | String | Description of status code
+| sub_return_code | int | Status code detail
+| sub_return_message | String | Detail description of status code
+The return_code can have the following possible values:
+| No | Value | Short description
+| 1 | 1 | SUCCESS
+| 2 | 2 | FAIL
+| 3 | 3 | PROCESSING
+If the return_code is 2 (FAIL), you should check the sub_return_code to know in detail what happened.
+Details​
+In this section, we will guide you through how to interpret sub_return_code.
+Create Order​
+| No | Value | Short description | Meaning | Note
+| 1 | -68 | DUPLICATE_APPS_TRANS_ID | The app_trans_id value of the order is duplicated | Order initialization failed. The merchant needs to query the status of this order or initiate the order again with a different app_trans_id value.
+| 2 | -401 | ILLEGAL_DATA_REQUEST | Parameters in the request are in the wrong format | Order initialization failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the order with valid parameter values
+| 3 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Initialization of the order failed. The merchant needs to check the credentials information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the order with valid authentication details
+| 4 | -429 | LIMIT_REQUEST_REACH | Request violate rate limit | Order initialization failed. The merchant needs to reinitialize the order after a certain period of time
+| 5 | -500 | SYSTEM_ERROR | The system is error | Order initialization failed. Merchant contact Zalopay for more details
+| 6 | -999 | SYSTEM_MAINTENANCE | The system is maintenance | Order initialization failed. The merchant needs to reinitialize the order after maintenance has been completed
+Query Order's Status​
+| No | Value | Short description | Meaning | Note
+| 1 | -54 | TIME_INVALID | The transaction is expired | Merchant creates another order
+| 2 | -63 | ZPW_BALANCE_NOT_ENOUGH | User balance not enough for payment | Order not yet payment. If order not yet expired, user can top up, and retry payment
+| 3 | -92 | APPTRANSID_INVALID | The app_trans_id value in the query request is not in the correct format | Merchant check and retry the query request with a valid app_trans_id value
+| 4 | -101 | ORDER_NOT_EXIST | The app_trans_id value does not exist | Merchant check and retry the query request with a different app_trans_id value
+| 5 | -217 | BANK_ERROR | The bank is error | Merchant needs to contact Zalopay for more details
+| 6 | -332, -333 | PROMOTION_ERROR | Payment for the order failed due to promotion program rules | Merchant needs to contact Zalopay for more details
+| 7 | -401 | ILLEGAL_DATA_REQUEST | Parameters in the request are in the wrong format | Initialization of the query request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the query request with valid parameter values
+| 8 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Initialization of the query request failed. The merchant needs to check the connection information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the query request with valid authentication details
+| 9 | -429 | LIMIT_REQUEST_REACH | Request violate rate limit | Initialization of the query request failed. The merchant needs to recreate the query request after a certain period of time
+| 10 | -500 | SYSTEM_ERROR | The system is error | Initialization of the query request failed. Merchant contact Zalopay for more details
+| 11 | -999 | SYSTEM_MAINTENANCE | The system is maintenance | Initialization of the query request failed. The merchant needs to reinitialize the query request after maintenance has been completed
+| 12 | -1330, -1331, -1332, -1333 | EXCEED_MAX_FUND_OUT_PER_DAY | User account has exceeded daily spending limit | Users can make another request on the following days
+| 13 | -1340, -1341, -1342, -1343 | EXCEED_MAX_FUND_OUT_PER_MONTH | User account has exceeded monthly spending limit | Users can make another request in the following months
+Cancel Order​
+| No | Value | Short description | Meaning | Note
+| 1 | -101 | ORDER_NOT_EXIST | The app_trans_id value does not exist | The merchant should verify and retry the cancel request with a different app_trans_id value.
+| 2 | -401 | ILLEGAL_DATA_REQUEST | Request parameters are in an incorrect format. | Cancel request initialization failed. The merchant should check the parameter format, ensure all required parameters are included, and reattempt with valid values.
+| 3 | -403 | ORDER_ALREADY_CAPTURED | The order has already been captured and cannot be canceled. | The cancel request is invalid as the order is captured. The merchant may wish to inform the customer or proceed with a refund process if applicable.
+| 4 | -429 | LIMIT_REQUEST_REACH | Request violate rate limit | Initialization of the cancel request failed. The merchant needs to recreate the query request after a certain period of time
+| 5 | -500 | SYSTEM_ERROR | The system is error | Initialization of the cancel request failed. Merchant contact Zalopay for more details
+| 6 | -999 | SYSTEM_MAINTENANCE | The system is maintenance | Initialization of the cancel request failed. The merchant needs to reinitialize the query request after maintenance has been completed
+Refund Order​
+| No | Value | Short description | Meaning | Note
+| 1 | 0 | SYSTEM_ERROR | The system is error | Refund request initialization failed. Merchant, please contact Zalopay for more details
+| 2 | -13 | ORDER_REFUND_EXPIRED | The refund violate expired | Merchant check and reinitialize the refund request with a valid timestamp parameter value (not exceeding 15 minutes from the request initialization time)
+| 3 | -101 | ORDER_NOT_FOUND | The zp_trans_id value does not exist | Merchant check and reinitialize the refund request with a different zp_trans_id value
+| 4 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Refund request initialization failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the refund request with valid parameter values
+| 5 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Initialization of the refund request failed. The merchant needs to check the connection information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the refund request with valid authentication details
+| 6 | -429 | LIMIT_REQUEST_REACH | Request violate rate limit | Refund request initialization failed. The merchant needs to recreate the refund request after a certain period of time
+| 7 | -500 | SYSTEM_ERROR | The system is error | Refund request initialization failed. Merchant contact Zalopay for more details
+| 8 | -999 | SYSTEM_MAINTENANCE | The system is maintenance | Initialization of the refund request failed. The merchant needs to reinitialize the refund request after maintenance has been completed
+| 9 | -32 | NOT_SUPPORT_PARTIAL_REFUND | The transaction does not supported partial refund | Partial Refunds for E-wallet Payments (Except ZaloPay), this sub_error_code related to refund and query refund API
+Query Refund Order's Status​
+| No | Value | Short description | Meaning | Note
+| 1 | -1 | REFUND_PENDING | Pending | Refund request is pending approval. Merchant contact Zalopay for more details
+| 2 | -2 | REFUND_TYPE_INVALID | Invalid refund type | Refund unsuccessful. Merchant contact Zalopay for more details
+| 3 | -13 | REFUND_EXPIRE_TIME | Refund time limit has passed | Refund unsuccessful. Merchant contact Zalopay for more details
+| 4 | -14 | REFUND_AMOUNT_INVALID | Invalid refund amount | Refund unsuccessful. The merchant needs to check and reinitialize the refund request with a valid amount
+| 5 | -16 | INSERT_REFUND_LOG_AR_FAIL | Added new faulty AR info | Refund in progress. Merchant contact Zalopay for more details
+| 6 | -32 | NOT_SUPPORT_PARTIAL_REFUND | The transaction does not supported partial refund | Partial Refunds for E-wallet Payments (Except ZaloPay), this sub_error_code related to refund and query refund API
+| 7 | -101 | M_REFUND_ID_NOT_FOUND | The m_refund_id value does not exist | Merchant check and retry the refund query request with a different m_refund_id value
+| 8 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Initialization of the query request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the query request with valid parameter values
+| 9 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Initialization of the query request failed. The merchant needs to check the connection information, verify the credentials signature, cross-reference it with the information provided by Zalopay, and reinitialize the query request with valid authentication details
+| 10 | -429 | LIMIT_REQUEST_REACH | Request violate rate limit | Initialization of the query request failed. The merchant needs to reinitialize the query request after a certain period of time
+| 11 | -500 | SYSTEM_ERROR | The system is error | Initialization of the query request failed. Merchant contact Zalopay for more details
+| 12 | -999 | SYSTEM_MAINTENANCE | The system is maintenance | Initialization of the query request failed. The merchant needs to reinitialize the query request after maintenance has been completed
+Create Binding (Wallet)​
+| No | Value | Short description | Meaning | Note
+| 1 | -68 | DUPLICATE_APPS_TRANS_ID | The app_trans_id value of the binding is duplicated | Binding initialization failed. The merchant needs to query the status of this link or reinitialize the link with a different app_trans_id value
+| 2 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Binding initialization failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the link with valid parameter values.
+| 3 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Binding initialization failed. The merchant needs to check the credentials information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the binding with valid authentication details
+| 4 | -500 | SYSTEM_ERROR | The system is error | Binding initialization failed. Merchant contact Zalopay for more details
+| 5 | -1801 | SYSTEM_MAINTENANCE | The system is maintenance | Binding initialization failed. The merchant needs to reinitialize the binding after maintenance has been completed
+Query Payment Token (Wallet)​
+| No | Value | Short description | Meaning | Note
+| 1 | -101 | APP_TRANS_ID_NOT_FOUND | The app_trans_id value does not exist | Merchant check and reinitialize the query request with a different app_trans_id value
+| 2 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Initialization of the query request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the query request with valid parameter values
+| 3 | -402 | ILLEGAL_APP_REQUEST | Invalid app code or signature | Initialization of the query request failed. The merchant needs to check the connection information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the query request with valid authentication details
+| 4 | -500 | SYSTEM_ERROR | The system is error | Initialization of the query request failed. Merchant contact Zalopay for more details
+| 5 | -1801 | SYSTEM_MAINTENANCE | The system is maintenance | Initialization of the query request failed. The merchant needs to reinitialize the request after maintenance has been completed
+Query Balance (Wallet)​
+| No | Value | Short description | Meaning | Note
+| 1 | -101 | TOKEN_NOT_EXITS | The pay_token value does not exist | Merchant check and reinitialize the balance inquiry request with a different pay_token value
+| 2 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Initialization of the balance inquiry query request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the query request with valid parameter values
+| 3 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Initialization of the balance inquiry request failed. The merchant needs to check the credentials information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the balance inquiry request with valid authentication details
+| 4 | -500 | SYSTEM_ERROR | The system is error | Initialization of the balance inquiry query request failed. Merchant contact Zalopay for more details
+| 5 | -1002 | AGREEMENT NOT VALID | User unbinding | Merchant needs to notify the user
+| 6 | -1007 | ARGREEMENT_EXPIRED | User token is expired | Merchant needs to notify the user
+| 7 | -1009 | USER_HAS_BEEN_LOCKED | User account has been locked | Merchant needs to notify the user
+| 8 | -1011 | PERMISSION_DENIED | User token not approve for app_id | Merchant needs to verify that the pay_token is valid for the app_id and reinitialize the balance inquiry request with valid app_id information for the merchant
+| 9 | -1800 | USER EXCEED KYC LIMIT | User account has exceeded limit | Merchant needs to notify the user
+| 10 | -1801 | SYSTEM IS MAINTENANCE | The system is maintenance | Initialization of the balance inquiry request failed. The merchant needs to reinitialize the balance inquiry request after maintenance has been completed
+Pay By Token (Wallet)​
+| No | Value | Short description | Meaning | Note
+| 1 | -101 | TOKEN_NOT_EXITS | User token not exits | Merchant check and reinitialize the payment request with a different pay_token value
+| 2 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Initialization of the payment request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the payment request with valid parameter values
+| 3 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code | Initialization of the payment request failed. The merchant needs to check the credentials information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the payment request with valid authentication details
+| 4 | -500 | SYSTEM_ERROR | The system is error | Initialization of the payment request failed. Merchant contact Zalopay for more details
+| 5 | -1002 | AGREEMENT NOT VALID | User token un binding | The merchant needs to inform the user and should not proceed with the payment request for this token
+| 6 | -1007 | AGREEMENT_EXPIRED | User toke expired | The merchant needs to inform the user and should not proceed with the payment request for this token
+| 7 | -1009 | USER_HAS_BEEN_LOCKED | User account has been locked | The merchant needs to inform the user and should not proceed with the payment request for this token
+| 8 | -1010 | USER_CANNOT_PAY | User can not payment | The merchant needs to inform the user and should not proceed with the payment request for this token
+| 9 | -1011 | PERMISSION_DENIED | User token not approve for app_id | Merchant needs to verify that the pay_token is valid for the app_id and reinitialize the payment request with valid app_id information for the merchant
+| 10 | -1013 | PAYMENT_AMOUNT_EXCEED_LIMIT | User account has exceeded spending limit | The merchant needs to inform the user and should not proceed with the payment request for this token
+| 11 | -1019 | USER_EXCEED_MERCHANT_LIMIT_BINDING | User account has exceeded limit binding | The merchant needs to inform the user and should not proceed with the payment request for this token
+| 12 | -1800 | USER EXCEED KYC LIMIT | User account has exceeded limit | The merchant needs to inform the user and should not proceed with the payment request for this token
+| 13 | -1801 | SYSTEM IS MAINTENANCE | The system is maintenance | Initialization of the payment request failed. The merchant needs to reinitialize the payment request after maintenance has been completed
+Un Binding (Wallet)​
+| No | Value | Short description | Meaning | Note
+| 1 | -101 | BINDING_NOT_EXITS | Binding id not exits | Merchant, please check and reinitialize the unbinding request with a different binding_id value
+| 2 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Initialization of the unbingding request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the unlink request with valid parameter values
+| 3 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Initialization of the unbinding request failed. The merchant needs to check the credentials information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the unbinding request with valid authentication details
+| 4 | -500 | SYSTEM_ERROR | The system is error | Initialization of the unbinding request failed. Merchant contact Zalopay for more details
+| 5 | -1011 | PERMISSION_DENIED | User token not approve for app_id | Merchant needs to verify that the binding_id is valid for the app_id and reinitialize the unbingding request with valid app_id information for the merchant
+| 6 | -1801 | SYSTEM_MAINTENANCE | The system is maintenance | Initialization of the unbinding request failed. The merchant needs to reinitialize the unbinding request after maintenance has been completed
+Query User Info​
+| No | Value | Short description | Meaning | Note
+| 1 | -401 | ILLEGAL_DATA_REQUEST | Invalid data | Initialization of the user information query request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the query request with valid parameter values
+| 2 | -402 | ILLEGAL_APP/SIGNATURE_REQUEST | Invalid app code or signature | Initialization of the user information query request failed. The merchant needs to check the credentials information, verify the authentication signature, cross-reference it with the information provided by Zalopay, and reinitialize the query request with valid authentication details
+| 3 | -500 | SYSTEM_ERROR | The system is error | Initialization of the user information query request failed. Merchant contact Zalopay for more details
+| 4 | -1801 | SYSTEM_MAINTENANCE | The system is maintenance | Initialization of the user information query request failed. The merchant needs to reinitialize the query request after maintenance has been completed
+Create Binding (Card)​
+| No | Value | Short description | Meaning | Note
+| 1 | -68 | DUPLICATE_APPS_TRANS_ID | The app_trans_id value of the order is duplicated | Binding initialization failed. The merchant needs to query the status of this binding or initiate the binding again with a different app_trans_id value.
+| 2 | -500 | INTERNAL_ERROR | The system is error | System error. Contact Zalopay for support.
+| 3 | -7002 | WRONG_PARAMETER | Invalid data | Initialization of the binding request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the binding request with valid parameter values
+Query Binding (Card)​
+| No | Value | Short description | Meaning | Note
+| 1 | -101 | APP_TRANS_ID_NOT_EXIST | The app_trans_id doesn't exist, please try again | Query failed. The merchant needs to check and initiate the binding query again with a different app_trans_id value.
+| 2 | -500 | INTERNAL_ERROR | The system is error | System error. Contact Zalopay for support.
+| 3 | -7002 | WRONG_PARAMETER | Invalid data | Initialization of the query request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the query request with valid parameter values
+Pay by Token (Card)​
+| No | Value | Short description | Meaning | Note
+| 1 | -500 | INTERNAL_ERROR | The system is error | System error. Contact Zalopay for support.
+| 2 | -7002 | WRONG_PARAMETER | Invalid data | Initialization of the payment request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the payment request with valid parameter values
+| 3 | -7202 | ZPTOKEN_INVALID | The token is invalid | Payment failed. The merchant needs to check and initiate the payment again with a different token value.
+| 4 | -7032 | ORDER_NOT_FOUND | Transaction is invalid or has exceeded timeout limit | Payment failed.
+| 5 | -7041 | TOKEN_NOT_EXIST | The token doesn't exist, please try again | Payment failed.
+| 6 | -7217 | TOKEN_STATUS_INVALID | Status token is invalid | Payment failed.
+| 7 | -7223 | TOKEN_NOT_FOUND | The token not found | Payment failed.
+Un Binding (Card)​
+| No | Value | Short description | Meaning | Note
+| 1 | -101 | BINDING_NOT_EXIST | The binding doesn't exist, please try again | Unbind failed
+| 2 | -500 | INTERNAL_ERROR | The system is error | System error. Contact Zalopay for support.
+| 3 | -7002 | WRONG_PARAMETER | Invalid data | Initialization of the unbind request failed. The merchant needs to check the format of the parameters or any missing parameters and reinitialize the unbind request with valid parameter values
+| 4 | -7216 | IDENTIFIER_INVALID | Identifier is invalid | Unbind failed
