@@ -212,57 +212,6 @@ Still, it is a simulator, not the gateway. Known differences:
 
 Always run a final round of tests against each gateway's own test environment before going live.
 
-## Run from source
-
-Running pay-sandbox requires Node.js 20 or newer. Building it from source requires Node.js 20.19+ or 22.12+ (Vite 8).
-
-```bash
-git clone https://github.com/nhan7tuoi/pay-sandbox.git
-cd pay-sandbox
-npm install
-npm run build
-npm start                 # same as `npx pay-sandbox`
-```
-
-### Development
-
-```bash
-npm run dev               # API with hot reload on :4242 + dashboard (Vite) on :5173/dashboard/
-npm run typecheck         # server + dashboard
-npm test                  # starts the built sandbox and runs every end-to-end suite (run `npm run build` first)
-npm run test:client       # Stripe suite only, against an already running sandbox
-npm run test:gateways     # MoMo / ZaloPay / VNPay suite only, against an already running sandbox
-```
-
-The suites start a webhook receiver on port 3000. `npm test` manages the sandbox itself; for the single-suite scripts, start it first with `npm run dev:server`.
-
-### Continuous integration
-
-- **CI** (`.github/workflows/ci.yml`) runs build, typecheck and `npm test` on Node 20, 22 and 24 for every pull request and push to `main`.
-- **Dependabot** opens weekly update PRs for npm packages and GitHub Actions.
-- **Gateway docs watch** (`.github/workflows/gateway-docs-watch.yml`) downloads the MoMo, ZaloPay and VNPay documentation pages the adapters are based on every Monday. When one changes, it opens a pull request whose diff is the change in the documentation text (snapshots live in `.github/gateway-docs/`). Run it locally with `node scripts/watch-gateway-docs.mjs`.
-
-```text
-src/
-  cli.ts, server.ts         CLI entry point and Fastify server
-  providers/                BaseProvider interface + stripe, momo, zalopay, vnpay adapters
-  webhook/                  dispatcher (retries, chaos) and Stripe signer
-  routes/                   Stripe /v1 router, idempotency, dashboard control API
-  services/                 Stripe domain logic (PaymentIntents, refunds, Checkout, …)
-ui/                         React + Vite + Tailwind dashboard
-docs/                       per-gateway guides
-scripts/                    e2e runner and gateway docs watcher
-```
-
-### Releasing
-
-```bash
-npm version patch          # or minor / major; updates package.json and creates the tag
-git push --follow-tags     # .github/workflows/release.yml tests, publishes to npm and creates the GitHub Release
-```
-
-Versions with a suffix (`0.2.0-beta.1`) are published under the npm `next` tag and marked as a pre-release.
-
 ## Contributing
 
 Bug reports, gateway behaviour that doesn't match the real one, and pull requests are welcome on [GitHub](https://github.com/nhan7tuoi/pay-sandbox/issues). When reporting a fidelity issue, please link the gateway documentation that describes the expected behaviour.
