@@ -1,5 +1,7 @@
 # pay-sandbox
 
+[![npm version](https://img.shields.io/npm/v/pay-sandbox.svg)](https://www.npmjs.com/package/pay-sandbox)
+[![CI](https://github.com/nhan7tuoi/pay-sandbox/actions/workflows/ci.yml/badge.svg)](https://github.com/nhan7tuoi/pay-sandbox/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/nhan7tuoi/pay-sandbox?style=social)](https://github.com/nhan7tuoi/pay-sandbox)
 
@@ -11,8 +13,6 @@ Real signed webhooks, retries, chaos testing and a live dashboard. One command, 
 ```bash
 npx pay-sandbox
 ```
-
-> **Status:** pre-release. The package is not on npm yet; until the first release, [run it from source](#run-from-source).
 
 ---
 
@@ -59,6 +59,9 @@ pay-sandbox implements each gateway's **real request and signature format**, so 
 ### 1. Start the sandbox
 
 ```bash
+npx pay-sandbox              # run it without installing
+# or add it to your project, e.g. for the test suite:
+npm install --save-dev pay-sandbox
 npx pay-sandbox
 ```
 
@@ -250,6 +253,15 @@ ui/                         React + Vite + Tailwind dashboard
 docs/                       per-gateway guides
 scripts/                    e2e runner and gateway docs watcher
 ```
+
+### Releasing
+
+```bash
+npm version patch          # or minor / major; updates package.json and creates the tag
+git push --follow-tags     # .github/workflows/release.yml tests, publishes to npm and creates the GitHub Release
+```
+
+Versions with a suffix (`0.2.0-beta.1`) are published under the npm `next` tag and marked as a pre-release.
 
 ## Contributing
 
