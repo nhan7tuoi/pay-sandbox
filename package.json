@@ -1,8 +1,17 @@
 {
   "name": "pay-sandbox",
   "version": "0.1.0",
-  "description": "Stateful local mock gateway for Stripe with a real webhook dispatcher and a modern dashboard.",
+  "description": "Local stateful payment gateway sandbox for Stripe, MoMo, ZaloPay and VNPay with real signed webhooks, retries, chaos testing and a dashboard.",
   "license": "MIT",
+  "author": "PhamDucNhan",
+  "homepage": "https://github.com/nhan7tuoi/pay-sandbox#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nhan7tuoi/pay-sandbox.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nhan7tuoi/pay-sandbox/issues"
+  },
   "type": "module",
   "bin": {
     "pay-sandbox": "dist/cli.js"
@@ -27,7 +36,13 @@
     "webhook",
     "sandbox",
     "testing",
-    "fastify"
+    "fastify",
+    "payment-gateway",
+    "vietnam",
+    "vnpay",
+    "momo",
+    "ipn",
+    "zalopay"
   ],
   "scripts": {
     "dev": "concurrently -n server,ui -c blue,magenta \"npm:dev:server\" \"npm:dev:ui\"",

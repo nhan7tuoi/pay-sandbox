@@ -1,4 +1,4 @@
-import { AlertTriangle, Search, Trash2, Webhook, X } from "lucide-react";
+import { AlertTriangle, Search, Star, Trash2, Webhook, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ChaosControl } from "@/components/ChaosControl";
 import { ProviderSettingsBar } from "@/components/ProviderSettingsBar";
@@ -205,6 +205,15 @@ function TopBar() {
         </span>
       </div>
       <ProviderTabs />
+      <a
+        href="https://github.com/nhan7tuoi/pay-sandbox"
+        target="_blank"
+        rel="noreferrer"
+        className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-[13px] text-muted transition-colors hover:border-border-strong hover:text-foreground max-sm:hidden"
+      >
+        <Star className="size-3.5" />
+        Star on GitHub
+      </a>
     </header>
   );
 }

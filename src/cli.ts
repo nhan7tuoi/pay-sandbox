@@ -25,8 +25,8 @@ ${color.bold("Usage")}
 ${color.bold("Options")}
   -p, --port <number>          Port for the API and dashboard   ${color.dim(`(default ${DEFAULT_CONFIG.port})`)}
       --host <address>         Interface to bind                ${color.dim(`(default ${DEFAULT_CONFIG.host})`)}
-  -w, --webhook-url <url>      Where webhooks are delivered     ${color.dim(`(default ${DEFAULT_CONFIG.webhookUrl})`)}
-  -s, --webhook-secret <sec>   Signing secret (whsec_...)       ${color.dim(`(default ${DEFAULT_CONFIG.webhookSecret})`)}
+  -w, --webhook-url <url>      Where Stripe webhooks are sent   ${color.dim(`(default ${DEFAULT_CONFIG.webhookUrl})`)}
+  -s, --webhook-secret <sec>   Stripe signing secret            ${color.dim(`(default ${DEFAULT_CONFIG.webhookSecret})`)}
       --api-version <ver>      api_version stamped on events    ${color.dim(`(default ${DEFAULT_CONFIG.apiVersion})`)}
       --webhook-timeout <ms>   Per-attempt delivery timeout     ${color.dim(`(default ${DEFAULT_CONFIG.webhookTimeoutMs})`)}
       --retry-schedule <s,..>  Retry delays in seconds          ${color.dim(`(default ${DEFAULT_CONFIG.retry.scheduleMs.map((ms) => ms / 1000).join(",")})`)}
