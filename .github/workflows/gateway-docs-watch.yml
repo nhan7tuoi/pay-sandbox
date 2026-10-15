@@ -35,7 +35,7 @@ jobs:
 
       - name: Open or update pull request
         if: steps.watch.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: automation/gateway-docs
           delete-branch: true
